@@ -11,7 +11,6 @@ import sys
 #importieren der Einzelprogramme
 from Device import *
 #from GUI import *
-from XML_Formatierung import *
 
 
 if __name__ == '__main__':
