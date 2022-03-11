@@ -1,0 +1,47 @@
+<Device>
+    <Settings>
+        <Clicks clicksPerMl="120" />
+        <Speed speed="0.00044943820224719103" />
+    </Settings>
+    <Sirups>
+        <Himbeere liquid="500" />
+        <Kokosnuss liquid="700" />
+        <Aperol liquid="750" />
+        <Hollunder liquid="700" />
+        <Asbach liquid="700" />
+        <Cola liquid="1000" />
+    </Sirups>
+    <Drinks>
+        <Mojito>
+            <Himbeere Quantity="25" />
+            <Kokosnuss Quantity="10" />
+        </Mojito>
+        <Aperol-Spritz>
+            <Aperol Quantity="20" />
+        </Aperol-Spritz>
+        <Tequila-Sunrise>
+            <Kokosnuss Quantity="30" />
+        </Tequila-Sunrise>
+        <Cuba-Libre />
+        <Pumpentest>
+            <Himbeere Quantity="20" />
+        </Pumpentest>
+        <Ruescherl>
+            <Asbach Quantity="20" />
+            <Cola Quantity="230" />
+        </Ruescherl>
+    </Drinks>
+    <LoadedSirups>
+        <Himbeere number="0" remainingLiquid="67" />
+        <Asbach number="1" remainingLiquid="76" />
+        <Cola number="2" remainingLiquid="100" />
+        <Kokosnuss number="3" remainingLiquid="98" />
+    </LoadedSirups>
+    <LoadedDrinks>
+        <Mojito number="0" />
+        <Tequila-Sunrise number="1" />
+        <Cuba-Libre number="5" />
+        <Pumpentest number="3" />
+        <Ruescherl number="4" />
+    </LoadedDrinks>
+</Device>
