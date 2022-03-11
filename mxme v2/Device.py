@@ -19,9 +19,7 @@ import time
 from Drink import *
 from Sirup import *
 from XML_Formatierung import *
-
-
-
+from GUI import *
 
 #Abfrage für Betriebssystem -> wenn Linux auf Raspberry wird Hardwarebib eingebunden
 os = platform.platform()
@@ -47,14 +45,6 @@ if rasp:
     GPIO.output(channel[0],GPIO.HIGH)
     print(".")
 
-#Hardwarepins initialisieren (wird nur auf Raspberry Hardware aktiviert)
-if rasp:
-    GPIO.setmode(GPIO.BCM)
-    for channel in channels:
-        for pin in channel:
-            GPIO.setup(pin,GPIO.OUT)
-
-
 class Device():
     def __init__(self,xName='Default'):
         self.name = xName
@@ -72,6 +62,9 @@ class Device():
         #Daten aus XML-Datei auslesen 
         self.loadData()
         #self.updateRemainingLiquid()
+
+        #MainWindow laden
+        MainWindow(self)
         
     def loadIngredient(self,sirup,place,percent=100):
         #Sirup wird in Ger?t geladen        

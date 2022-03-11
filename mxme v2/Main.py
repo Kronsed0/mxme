@@ -14,6 +14,6 @@ from Device import *
 
 
 if __name__ == '__main__':
-    #app = QApplication(sys.argv)
+    app = QApplication(sys.argv)
     myGui = Device("mxme")
-    #app.exec_() # Start der Event-Loop
+    app.exec_() # Start der Event-Loop
