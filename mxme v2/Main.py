@@ -6,7 +6,6 @@ Created on Fri Mar 11 14:30:05 2022
 """
 
 #importieren der Systembibliotheken
-import sys
 
 #importieren der Einzelprogramme
 from Device import *
@@ -14,6 +13,6 @@ from Device import *
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    
     myGui = Device("mxme")
-    app.exec_() # Start der Event-Loop
+    

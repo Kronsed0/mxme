@@ -11,10 +11,12 @@ QPushButton, QLineEdit, QLabel, QGridLayout, \
 QHBoxLayout,QAbstractButton,QVBoxLayout,QDialog,QFrame,QComboBox,QProgressBar,QSlider,QCheckBox
 from PyQt5.QtGui import QIcon,QPixmap,QPainter,QImage,QPalette,QBrush,QFont
 from PyQt5.QtCore import QSize,QPoint,Qt
+import sys
 
 
 class MainWindow(QWidget):
     def __init__(self,_device):
+        app = QApplication(sys.argv)
         super().__init__()
         self.device = _device
 
@@ -114,6 +116,7 @@ class MainWindow(QWidget):
         #Layout erstellen und anzeigen
         self.setLayout(self.mainLayout)
         self.show()
+        app.exec_() # Start der Event-Loop
 
     def onSettingsClicked(self):
         self.settingsWindow = Settings(self)    #Fenster f?r Einstellungen wird ge?ffnet
@@ -220,11 +223,11 @@ class Settings(QWidget):
         self.sliderSpeed.setRange(10,10000)
         self.sliderSpeed.setFocusPolicy(Qt.NoFocus)
         self.sliderSpeed.setPageStep(10)
-        self.sliderSpeed.setValue(1/self.mainWindow.getSpeed())
+        self.sliderSpeed.setValue(1/self.mainWindow.device.getSpeed())
         self.sliderSpeed.valueChanged.connect(self.updateSpeed)
 
         #Label f?r Geschwindigkeit
-        self.labelSpeed = QLabel(str(1/self.mainWindow.getSpeed()))
+        self.labelSpeed = QLabel(str(1/self.mainWindow.device.getSpeed()))
         self.labelSpeedMain = QLabel("Geschwindigkeit:")
         self.labelSpeedMain.setFont(QFont("Arial",18))
 
@@ -233,11 +236,11 @@ class Settings(QWidget):
         self.sliderClicksPerMl.setRange(10,1000)
         self.sliderClicksPerMl.setFocusPolicy(Qt.NoFocus)
         self.sliderClicksPerMl.setPageStep(10)
-        self.sliderClicksPerMl.setValue(self.mainWindow.getClicksPerMl())
+        self.sliderClicksPerMl.setValue(self.mainWindow.device.getClicksPerMl())
         self.sliderClicksPerMl.valueChanged.connect(self.updateClicks)
 
         #Label f?r Clicks/Ml
-        self.labelClicksPerMl = QLabel(str(self.mainWindow.getClicksPerMl()))
+        self.labelClicksPerMl = QLabel(str(self.mainWindow.device.getClicksPerMl()))
         self.labelClicksPerMlMain = QLabel("Impulse pro ml:")
         self.labelClicksPerMlMain.setFont(QFont("Arial",18))
 
@@ -264,15 +267,15 @@ class Settings(QWidget):
 
         #bereits erstellte Sirups und Drinks mit Positionen werden hinzugef?gt
         self.labelSirup.addWidget(self.textSirup)
-        for s in self.mainWindow.getSirups():
-            temp = self.mainWindow.findPosSirup(s)
+        for s in self.mainWindow.device.getSirups():
+            temp = self.mainWindow.device.findPosSirup(s)
             pos = (" ("+str(temp)+")") if temp >= 0 else ""
             self.labelSirup.addWidget(QLabel(s.getName() + pos))
         self.labelSirup.addLayout(self.labelSirupButton)
 
         self.labelDrink.addWidget(self.textDrink)
-        for s in self.mainWindow.getDrinks():
-            temp = self.mainWindow.findPosDrink(s)
+        for s in self.mainWindow.device.getDrinks():
+            temp = self.mainWindow.device.findPosDrink(s)
             pos = (" ("+str(temp)+")") if temp >= 0 else ""
             self.labelDrink.addWidget(QLabel(s.getName() + pos))
         self.labelDrink.addLayout(self.labelDrinkButton)
@@ -282,7 +285,7 @@ class Settings(QWidget):
 
         #Label f?r Copyright
         self.copyright = QLabel()
-        self.copyright.setText(self.mainWindow.about+"\n"+self.mainWindow.version)
+        self.copyright.setText(self.mainWindow.device.about+"\n"+self.mainWindow.device.version)
 
         #Anzeige
         self.mainLayout = QGridLayout()
@@ -303,7 +306,7 @@ class Settings(QWidget):
         
         
     def onSafeClicked(self):
-        self.mainWindow.safeData()
+        self.mainWindow.device.safeData()
 
     #def onLoadClicked(self):
     #    pass
@@ -345,18 +348,18 @@ class Settings(QWidget):
         self.UnloadDrinkWindow.show()
 
     def onBackClicked(self):
-        self.mainWindow.updateRemainingLiquid()
-        self.mainWindow.safeData()
+        self.mainWindow.device.updateRemainingLiquid()
+        self.mainWindow.device.safeData()
         self.close()
 
     def updateSpeed(self,value):
         self.labelSpeed.setText(str(value))
-        self.mainWindow.setSpeed(1/value)
+        self.mainWindow.device.setSpeed(1/value)
         self.update()
 
     def updateClicks(self,value):
         self.labelClicksPerMl.setText(str(value))
-        self.mainWindow.setClicksPerMl(value)
+        self.mainWindow.device.setClicksPerMl(value)
         self.update()
 
     def checkBoxClicked(self,state):
@@ -423,7 +426,7 @@ class AddSirup(QWidget):
         self.close()
 
     def onOkClicked(self):
-        self.mainWindow.createSirup(self.textboxName.text(),int(self.textboxLiquid.text()))
+        self.mainWindow.device.createSirup(self.textboxName.text(),int(self.textboxLiquid.text()))
         self.close()
         
 

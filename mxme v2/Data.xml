@@ -32,10 +32,10 @@
         </Ruescherl>
     </Drinks>
     <LoadedSirups>
-        <Himbeere number="0" remainingLiquid="67" />
-        <Asbach number="1" remainingLiquid="76" />
-        <Cola number="2" remainingLiquid="100" />
-        <Kokosnuss number="3" remainingLiquid="98" />
+        <Himbeere number="0" remainingLiquid="0" />
+        <Asbach number="1" remainingLiquid="73" />
+        <Cola number="2" remainingLiquid="77" />
+        <Kokosnuss number="3" remainingLiquid="79" />
     </LoadedSirups>
     <LoadedDrinks>
         <Mojito number="0" />
