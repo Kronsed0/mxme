@@ -18,6 +18,9 @@ class MainWindow(QWidget):
     def __init__(self,_device):
         app = QApplication(sys.argv)
         super().__init__()
+
+        
+
         self.device = _device
 
         #Haupapplikation initialisieren
@@ -86,7 +89,10 @@ class MainWindow(QWidget):
             self.mainLayout.addWidget(self.drink,self.row,self.column)
             #else:
             self.mainLayout.addWidget(self.drinktext,self.row+1,self.column,QtCore.Qt.AlignHCenter)
-                        
+                     
+            
+        print("Buttons erfolgreich erstellt")
+
         #Layout f?r Buttons erstellen
         self.layoutButtons = QVBoxLayout()
         
@@ -97,6 +103,8 @@ class MainWindow(QWidget):
         self.buttonShutdown = PicButton(QPixmap('img/Shutdown.png'),QPixmap('img/Shutdown.png'),QPixmap('img/Shutdown_pressed'))
         self.buttonShutdown.setFixedSize(64,64)
         self.buttonShutdown.clicked.connect(self.onShutdownClicked)
+
+        print("Settings und Shutdown Buttons erfolgreich erstellt")
 
         #Progressbalken f?r F?llstand
         for x in range(8):
