@@ -61,10 +61,13 @@ class Device():
 
         #Daten aus XML-Datei auslesen 
         self.loadData()
-        #self.updateRemainingLiquid()
-
+        
         #MainWindow laden
         MainWindow(self)
+
+        self.updateRemainingLiquid()
+
+        
         
     def loadIngredient(self,sirup,place,percent=100):
         #Sirup wird in Ger?t geladen        
@@ -152,7 +155,7 @@ class Device():
         for sirup in drink.getIngredients().keys():
             sirup.pourOut(drink.getIngredients()[sirup])
             print("Restmenge",sirup.getName(),": ",sirup.getRemainingLiquid(),"%")
-        #self.updateRemainingLiquid()
+        self.updateRemainingLiquid()
             
         #Ausgabe
         print(drink.getName(),"wurde ausgeschenkt")
