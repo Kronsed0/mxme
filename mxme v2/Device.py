@@ -29,7 +29,7 @@ class Device():
         self.loaded_ingredients = {}    #Dict {Position:Sirup}
         self.loaded_drinks = {}         #Dict {Position:Drink}
         self.buttons = []   #Hier werden die Buttons zwischengespeichert
-        self.levelList = [] #Liste f?r die F?llstandsanzeigen
+        self.levelList = [] #Liste für die F?llstandsanzeigen
         self.clicksPerMl = 50   #Wert für die Ausflussgeschwindigkeit pro Schritt
         self.speed = 0.01       #Geschwindigkeit der Steppermotoren (Delay in s zwischen Schritten)
         self.version = "Version: 0.6.0"    #Version {Alpha=0,Beta=1,Release=x}.{FunctionChanges}.{BugFix}
@@ -113,7 +113,7 @@ class Device():
     def mix(self,drink):
         #richtige Übergabeparameter?
         if drink == None:
-            print("Falscher Uebergabeparameter")
+            print("kein gültiger Drink übergeben!")
             return 0
 
         #benötigte Sirups geladen?
@@ -265,7 +265,10 @@ class Device():
         for x in self.getDrinks():
             drink = ET.SubElement(drinks,x.getName())
             for ingredients,quantity in zip(x.getIngredients().keys(),x.getIngredients().values()):
-                ET.SubElement(drink,ingredients.getName(),Quantity = str(quantity))
+                if ingredients == None:
+                    print("enthaltener Sirup gelöscht! Manueller Eintrag in XML-Datei erforderlich")
+                else:
+                    ET.SubElement(drink,ingredients.getName(),Quantity = str(quantity))
 
         for number,ingredient in zip(self.getLoadedIngredients().keys(),self.getLoadedIngredients().values()):
             ET.SubElement(loadedSirups,ingredient.getName(),number=str(number),remainingLiquid=str(ingredient.getRemainingLiquid()))

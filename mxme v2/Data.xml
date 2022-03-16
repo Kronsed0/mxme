@@ -9,6 +9,7 @@
         <Hollunder liquid="700" />
         <Asbach liquid="700" />
         <Cola liquid="1000" />
+        <Aperol liquid="700" />
     </Sirups>
     <Drinks>
         <Mojito>
@@ -16,7 +17,7 @@
             <Kokosnuss Quantity="10" />
         </Mojito>
         <Aperol-Spritz>
-            <Aperol Quantity="20" />
+            <Aperol Quantity="30" />
         </Aperol-Spritz>
         <Tequila-Sunrise>
             <Kokosnuss Quantity="30" />
@@ -31,10 +32,11 @@
         </Ruescherl>
     </Drinks>
     <LoadedSirups>
-        <Himbeere number="0" remainingLiquid="66" />
+        <Himbeere number="0" remainingLiquid="41" />
         <Asbach number="1" remainingLiquid="67" />
         <Cola number="2" remainingLiquid="31" />
         <Kokosnuss number="3" remainingLiquid="48" />
+        <Aperol number="5" remainingLiquid="95" />
     </LoadedSirups>
     <LoadedDrinks>
         <Mojito number="0" />
@@ -42,5 +44,6 @@
         <Cuba-Libre number="5" />
         <Pumpentest number="3" />
         <Ruescherl number="4" />
+        <Aperol-Spritz number="2" />
     </LoadedDrinks>
 </Device>
