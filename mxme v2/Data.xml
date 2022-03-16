@@ -1,12 +1,11 @@
 <Device>
     <Settings>
-        <Clicks clicksPerMl="120" />
-        <Speed speed="0.00044943820224719103" />
+        <Clicks clicksPerMl="100" />
+        <Speed speed="0.00045413260672116256" />
     </Settings>
     <Sirups>
         <Himbeere liquid="500" />
         <Kokosnuss liquid="700" />
-        <Aperol liquid="750" />
         <Hollunder liquid="700" />
         <Asbach liquid="700" />
         <Cola liquid="1000" />
@@ -32,10 +31,10 @@
         </Ruescherl>
     </Drinks>
     <LoadedSirups>
-        <Himbeere number="0" remainingLiquid="0" />
-        <Asbach number="1" remainingLiquid="73" />
-        <Cola number="2" remainingLiquid="77" />
-        <Kokosnuss number="3" remainingLiquid="79" />
+        <Himbeere number="0" remainingLiquid="66" />
+        <Asbach number="1" remainingLiquid="67" />
+        <Cola number="2" remainingLiquid="31" />
+        <Kokosnuss number="3" remainingLiquid="48" />
     </LoadedSirups>
     <LoadedDrinks>
         <Mojito number="0" />

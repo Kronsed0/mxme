@@ -125,6 +125,7 @@ class MainWindow(QWidget):
         #Layout erstellen und anzeigen
         self.setLayout(self.mainLayout)
         self.show()
+        self.device.updateRemainingLiquid()
         app.exec_() # Start der Event-Loop
 
     def onSettingsClicked(self):
@@ -324,39 +325,39 @@ class Settings(QWidget):
         self.device.safeData()
      
     def onAddSirupClicked(self):
-        self.addSirupWindow = AddSirup(self.mainWindow)    #Fenster f?r Einstellungen wird ge?ffnet
+        self.addSirupWindow = AddSirup(self.mainWindow,self.device)    
         self.addSirupWindow.show()
 
     def onRemoveSirupClicked(self):
-        self.eraseSirupWindow = EraseSirup(self.mainWindow)
+        self.eraseSirupWindow = EraseSirup(self.mainWindow,self.device)
         self.eraseSirupWindow.show()
 
     def onAddDrinkClicked(self):
-        self.addDrinkWindow = AddDrink(self.mainWindow)
+        self.addDrinkWindow = AddDrink(self.mainWindow,self.device)
         self.addDrinkWindow.show()
 
     def onRemoveDrinkClicked(self):
-        self.eraseDrinkWindow = EraseDrink(self.mainWindow)
+        self.eraseDrinkWindow = EraseDrink(self.mainWindow,self.device)
         self.eraseDrinkWindow.show()
 
     def onLoadSirupClicked(self):
-        self.loadSirupWindow = LoadSirup(self.mainWindow)    #Fenster f?r Einstellungen wird ge?ffnet
+        self.loadSirupWindow = LoadSirup(self.mainWindow,self.device)   
         self.loadSirupWindow.show()
 
     def onReloadSirupClicked(self):
-        self.reloadSirupWindow = ReloadSirup(self.mainWindow)
+        self.reloadSirupWindow = ReloadSirup(self.mainWindow,self.device)
         self.reloadSirupWindow.show()
 
     def onLoadDrinkClicked(self):
-        self.loadDrinkWindow = LoadDrink(self.mainWindow)
+        self.loadDrinkWindow = LoadDrink(self.mainWindow,self.device)
         self.loadDrinkWindow.show()
 
     def onUnloadSirupClicked(self):
-        self.unloadSirupWindow = UnloadSirup(self.mainWindow)
+        self.unloadSirupWindow = UnloadSirup(self.mainWindow,self.device)
         self.unloadSirupWindow.show()
 
     def onUnloadDrinkClicked(self):
-        self.UnloadDrinkWindow = UnloadDrink(self.mainWindow)
+        self.UnloadDrinkWindow = UnloadDrink(self.mainWindow,self.device)
         self.UnloadDrinkWindow.show()
 
     def onBackClicked(self):
@@ -376,20 +377,19 @@ class Settings(QWidget):
 
     def checkBoxClicked(self,state):
         if state == Qt.Checked:
-            print("Motor wird aktiviert")
-            if rasp:
-                GPIO.output(channels[0][0],GPIO.LOW)
+            self.device.enablePump(0)
         else:
-            print("Motor wird deaktiviert")
-            if rasp:
-                GPIO.output(channels[0][0],GPIO.HIGH)
+            self.device.disablePump(0)
 
     
 #---------------------------------------------------------------------------
 
 class AddSirup(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
+
+        #Eltern-Kontruktor wird ausgeführt
         super().__init__()
+
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         self.setWindowTitle("Add Sirup")
@@ -398,8 +398,9 @@ class AddSirup(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         
-        #Zur?ck-Button wird erstellt
+        #Zurück-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
         self.buttonBack.setFixedSize(64,64)
         self.buttonBack.clicked.connect(self.onBackClicked)
@@ -409,7 +410,7 @@ class AddSirup(QWidget):
         self.buttonOk.setFixedSize(64,64)
         self.buttonOk.clicked.connect(self.onOkClicked)
 
-        #Texteingabe f?r Sirupname und Menge
+        #Texteingabe für Sirupname und Menge
         self.textboxName = QLineEdit()
         self.textboxName.setText("")
         self.textboxLiquid = QLineEdit()
@@ -438,14 +439,14 @@ class AddSirup(QWidget):
         self.close()
 
     def onOkClicked(self):
-        self.mainWindow.device.createSirup(self.textboxName.text(),int(self.textboxLiquid.text()))
+        self.device.createSirup(self.textboxName.text(),int(self.textboxLiquid.text()))
         self.close()
         
 
 #---------------------------------------------------------------------------
 
 class LoadSirup(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
         super().__init__()
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -455,6 +456,7 @@ class LoadSirup(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         
         #Zur?ck-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
@@ -468,7 +470,7 @@ class LoadSirup(QWidget):
 
         #Texteingabe f?r Drinkname
         self.comboBoxSirup = QComboBox()
-        for s in self.mainWindow.getSirups():
+        for s in self.device.getSirups():
             self.comboBoxSirup.addItem(s.getName())
         self.comboBoxPosition = QComboBox()
         for x in range(8):
@@ -497,16 +499,16 @@ class LoadSirup(QWidget):
         self.close()
 
     def onOkClicked(self):
-        #gew?hlten Sirup finden
-        sirup = self.mainWindow.findSirup(self.comboBoxSirup.currentText())
+        #gewählten Sirup finden
+        sirup = self.device.findSirup(self.comboBoxSirup.currentText())
         position = int(self.comboBoxPosition.currentText())
-        self.mainWindow.loadIngredient(sirup,int(position))
+        self.device.loadIngredient(sirup,int(position))
         self.close()
 
 #---------------------------------------------------------------------------
 
 class AddDrink(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
         super().__init__()
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -516,9 +518,10 @@ class AddDrink(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         self.listIngredients = []
         
-        #Zur?ck-Button wird erstellt
+        #Zurück-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
         self.buttonBack.setFixedSize(64,64)
         self.buttonBack.clicked.connect(self.onBackClicked)
@@ -533,7 +536,7 @@ class AddDrink(QWidget):
 
         #Texteingabe f?r Drinkname
         self.comboBoxSirup = QComboBox()
-        for s in self.mainWindow.getSirups():
+        for s in self.device.getSirups():
             self.comboBoxSirup.addItem(s.getName())
         self.textBoxMenge = QLineEdit()
         self.textBoxMenge.setText("")
@@ -588,17 +591,16 @@ class AddDrink(QWidget):
         #Dict erstellen
         d = {}
         for x,y in self.listIngredients:
-            d[self.mainWindow.findSirup(x)] = int(y)
-        print("Dict beim Erstellen: ",d)
+            d[self.device.findSirup(x)] = int(y)
 
         #Drink erstellen
-        self.mainWindow.createDrink(self.textBoxName.text(),d)
+        self.device.createDrink(self.textBoxName.text(),d)
         self.close()
 
 #---------------------------------------------------------------------------
 
 class LoadDrink(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
         super().__init__()
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -608,8 +610,9 @@ class LoadDrink(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         
-        #Zur?ck-Button wird erstellt
+        #Zurück-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
         self.buttonBack.setFixedSize(64,64)
         self.buttonBack.clicked.connect(self.onBackClicked)
@@ -619,9 +622,9 @@ class LoadDrink(QWidget):
         self.buttonOk.setFixedSize(64,64)
         self.buttonOk.clicked.connect(self.onOkClicked)
 
-        #Texteingabe f?r Drinkname
+        #Texteingabe für Drinkname
         self.comboBoxDrink = QComboBox()
-        for s in self.mainWindow.getDrinks():
+        for s in self.device.getDrinks():
             self.comboBoxDrink.addItem(s.getName())
         self.comboBoxPosition = QComboBox()
         for x in range(8):
@@ -650,16 +653,16 @@ class LoadDrink(QWidget):
         self.close()
 
     def onOkClicked(self):
-        #gew?hlten Sirup finden
-        drink = self.mainWindow.findDrink(self.comboBoxDrink.currentText())
+        #gewählten Sirup finden
+        drink = self.device.findDrink(self.comboBoxDrink.currentText())
         position = int(self.comboBoxPosition.currentText())
-        self.mainWindow.loadDrink(drink,position)
+        self.device.loadDrink(drink,position)
         self.close()
 
 #---------------------------------------------------------------------------
 
 class UnloadSirup(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
         super().__init__()
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -669,6 +672,7 @@ class UnloadSirup(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         
         #Zur?ck-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
@@ -680,7 +684,7 @@ class UnloadSirup(QWidget):
         self.buttonOk.setFixedSize(64,64)
         self.buttonOk.clicked.connect(self.onOkClicked)
 
-        #Texteingabe f?r Position
+        #Texteingabe für Position
         self.comboBoxPosition = QComboBox()
         for x in range(8):
             self.comboBoxPosition.addItem(str(x))
@@ -705,13 +709,13 @@ class UnloadSirup(QWidget):
 
     def onOkClicked(self):
         position = int(self.comboBoxPosition.currentText())
-        self.mainWindow.unloadIngredient(position)
+        self.device.unloadIngredient(position)
         self.close()
 
 #---------------------------------------------------------------------------
 
 class UnloadDrink(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
         super().__init__()
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -721,8 +725,9 @@ class UnloadDrink(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         
-        #Zur?ck-Button wird erstellt
+        #Zurück-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
         self.buttonBack.setFixedSize(64,64)
         self.buttonBack.clicked.connect(self.onBackClicked)
@@ -732,7 +737,7 @@ class UnloadDrink(QWidget):
         self.buttonOk.setFixedSize(64,64)
         self.buttonOk.clicked.connect(self.onOkClicked)
 
-        #Texteingabe f?r Position
+        #Texteingabe für Position
         self.comboBoxPosition = QComboBox()
         for x in range(8):
             self.comboBoxPosition.addItem(str(x))
@@ -757,13 +762,13 @@ class UnloadDrink(QWidget):
 
     def onOkClicked(self):
         position = int(self.comboBoxPosition.currentText())
-        self.mainWindow.unloadDrink(position)
+        self.device.unloadDrink(position)
         self.close()
 
 #---------------------------------------------------------------------------
 
 class EraseDrink(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
         super().__init__()
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -773,6 +778,7 @@ class EraseDrink(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         
         #Zur?ck-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
@@ -786,7 +792,7 @@ class EraseDrink(QWidget):
 
         #Texteingabe f?r Drinkname
         self.comboBoxDrink = QComboBox()
-        for s in self.mainWindow.getDrinks():
+        for s in self.device.getDrinks():
             self.comboBoxDrink.addItem(s.getName())
 
         self.name = QLabel("Name:")
@@ -809,14 +815,14 @@ class EraseDrink(QWidget):
 
     def onOkClicked(self):
         #gew?hlten Sirup finden
-        self.mainWindow.eraseDrink(self.comboBoxDrink.currentText())
+        self.device.eraseDrink(self.comboBoxDrink.currentText())
         print("Drink",self.comboBoxDrink.currentText(),"geloescht")
         self.close()
 
 #---------------------------------------------------------------------------
 
 class EraseSirup(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
         super().__init__()
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -826,6 +832,7 @@ class EraseSirup(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         
         #Zur?ck-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
@@ -839,7 +846,7 @@ class EraseSirup(QWidget):
 
         #Texteingabe f?r Drinkname
         self.comboBoxSirup = QComboBox()
-        for s in self.mainWindow.getSirups():
+        for s in self.device.getSirups():
             self.comboBoxSirup.addItem(s.getName())
 
         self.name = QLabel("Name:")
@@ -862,14 +869,14 @@ class EraseSirup(QWidget):
 
     def onOkClicked(self):
         #gew?hlten Sirup finden
-        self.mainWindow.eraseSirup(self.comboBoxSirup.currentText())
+        self.device.eraseSirup(self.comboBoxSirup.currentText())
         print("Sirup",self.comboBoxSirup.currentText(),"geloescht")
         self.close()
 
 #---------------------------------------------------------------------------
 
 class ReloadSirup(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
         super().__init__()
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -879,6 +886,7 @@ class ReloadSirup(QWidget):
         
         #Referenz auf das mainWindow Objekt wird gespeichert
         self.mainWindow = mainWindow
+        self.device = _device
         
         #Zur?ck-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'))
@@ -892,7 +900,7 @@ class ReloadSirup(QWidget):
 
         #Texteingabe f?r Drinkname
         self.comboBoxSirup = QComboBox()
-        for s in self.mainWindow.getSirups():
+        for s in self.device.getSirups():
             self.comboBoxSirup.addItem(s.getName())
 
         self.name = QLabel("Name:")
@@ -915,7 +923,7 @@ class ReloadSirup(QWidget):
 
     def onOkClicked(self):
         #gew?hlten Sirup finden
-        sirup=self.mainWindow.findSirup(self.comboBoxSirup.currentText())
+        sirup=self.device.findSirup(self.comboBoxSirup.currentText())
         #Restmenge auf 100% setzen
         sirup.setRemainingLiquid(100)
         #Debug-Ausgabe

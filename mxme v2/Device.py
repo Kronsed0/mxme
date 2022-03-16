@@ -45,9 +45,7 @@ class Device():
         self.loadData()
         
         #MainWindow laden
-        MainWindow(self)
-
-        self.updateRemainingLiquid()        
+        MainWindow(self)       
         
     def initHardware(self):
         #Abfrage für Betriebssystem -> wenn Linux auf Raspberry wird Hardwarebib eingebunden
@@ -132,7 +130,7 @@ class Device():
             ing.append((self.findPosSirup(s),drink.getIngredients()[s]))
         print("Pumpenausgabe--------------")
         print(ing)
-        if rasp:
+        if self.rasp:
             for pos,men in ing:
                 #Pumpe einschalten (Enable und Richtung)
                 GPIO.output(channels[pos][0],GPIO.LOW)
