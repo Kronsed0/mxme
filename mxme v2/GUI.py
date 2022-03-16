@@ -128,7 +128,7 @@ class MainWindow(QWidget):
         app.exec_() # Start der Event-Loop
 
     def onSettingsClicked(self):
-        self.settingsWindow = Settings(self)    #Fenster f?r Einstellungen wird ge?ffnet
+        self.settingsWindow = Settings(self,self.device)    #Fenster für Einstellungen wird geöffnet
         self.settingsWindow.show()
 
     def onShutdownClicked(self):
@@ -167,16 +167,20 @@ class MainWindow(QWidget):
         self.device.mix(self.device.getLoadedDrink(7))
 
 class Settings(QWidget):
-    def __init__(self,mainWindow):
+    def __init__(self,mainWindow,_device):
+
+        #Eltern-Konstruktor wird aufgerufen
         super().__init__()
+
+        #Device-Klasse und Main-Window wird zwischengespeichert, um schnellen Zugriff auf die Methoden zu haben
+        self.device = _device
+        self.mainWindow = mainWindow
+
         #Unterfenster initialisieren
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         self.setWindowTitle("Settings")
         self.resize(1024, 600)
         self.move(0,0)
-        
-        #Referenz auf das mainWindow Objekt wird gespeichert
-        self.mainWindow = mainWindow
         
         #Zur?ck-Button wird erstellt
         self.buttonBack = PicButton(QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck.png'),QPixmap('img/Zuruck_pressed.png'),"",self)
@@ -184,32 +188,34 @@ class Settings(QWidget):
         self.buttonBack.clicked.connect(self.onBackClicked)
         #self.buttonBack.move(QPoint(10,10))
 
-        #Labels f?r Sirups, Drinks und Buttons werden erstellt
+        #Labels für Sirups, Drinks und Buttons werden erstellt
         self.labelSirup = QVBoxLayout()
         self.labelDrink = QVBoxLayout()
         self.labelButton = QVBoxLayout()
         self.labelSirupButton = QHBoxLayout()
         self.labelDrinkButton = QHBoxLayout()
         
-        #Men?buttons
+        #Menübuttons
         self.buttonSafe = PicButton(QPixmap('img/Safe.png'),QPixmap('img/Safe.png'),QPixmap('img/Safe_pressed.png'))
         self.buttonSafe.setFixedSize(64,64)
         self.buttonSafe.clicked.connect(self.onSafeClicked)
-        #self.buttonLoad = PicButton(QPixmap('img/Load.png'),QPixmap('img/Load.png'),QPixmap('img/Load_pressed.png'))
-        #self.buttonLoad.setFixedSize(64,64)
-        #self.buttonLoad.clicked.connect(self.onLoadClicked)
+
         self.buttonAddSirup = PicButton(QPixmap('img/Add.png'),QPixmap('img/Add.png'),QPixmap('img/Add_pressed.png'))
         self.buttonAddSirup.setFixedSize(64,64)
         self.buttonAddSirup.clicked.connect(self.onAddSirupClicked)
+
         self.buttonRemoveSirup = PicButton(QPixmap('img/Remove.png'),QPixmap('img/Remove.png'),QPixmap('img/Remove_pressed.png'))
         self.buttonRemoveSirup.setFixedSize(64,64)
         self.buttonRemoveSirup.clicked.connect(self.onRemoveSirupClicked)
+
         self.buttonAddDrink = PicButton(QPixmap('img/Add.png'),QPixmap('img/Add.png'),QPixmap('img/Add_pressed.png'))
         self.buttonAddDrink.setFixedSize(64,64)
         self.buttonAddDrink.clicked.connect(self.onAddDrinkClicked)
+
         self.buttonRemoveDrink = PicButton(QPixmap('img/Remove.png'),QPixmap('img/Remove.png'),QPixmap('img/Remove_pressed.png'))
         self.buttonRemoveDrink.setFixedSize(64,64)
         self.buttonRemoveDrink.clicked.connect(self.onRemoveDrinkClicked)
+
         self.buttonReloadSirup = PicButton(QPixmap('img/Reload.png'),QPixmap('img/Reload.png'),QPixmap('img/Reload_pressed.png'))
         self.buttonReloadSirup.setFixedSize(64,64)
         self.buttonReloadSirup.clicked.connect(self.onReloadSirupClicked)
@@ -217,53 +223,56 @@ class Settings(QWidget):
         self.buttonLoadSirup = QPushButton("Load Sirup",self)
         self.buttonLoadSirup.clicked.connect(self.onLoadSirupClicked)
         self.buttonLoadSirup.resize(QSize(100,100))
+
         self.buttonUnloadSirup = QPushButton("Unload Sirup",self)
         self.buttonUnloadSirup.clicked.connect(self.onUnloadSirupClicked)
         self.buttonUnloadSirup.resize(QSize(100,100))
+
         self.buttonLoadDrink = QPushButton("Load Drink",self)
         self.buttonLoadDrink.clicked.connect(self.onLoadDrinkClicked)
         self.buttonLoadDrink.resize(QSize(100,100))
+
         self.buttonUnloadDrink = QPushButton("Unload Drink",self)
         self.buttonUnloadDrink.clicked.connect(self.onUnloadDrinkClicked)
         self.buttonUnloadDrink.resize(QSize(100,100))
         
-        #Slider f?r Geschwindigkeit
+        #Slider für Geschwindigkeit
         self.sliderSpeed = QSlider(Qt.Horizontal)
         self.sliderSpeed.setRange(10,10000)
         self.sliderSpeed.setFocusPolicy(Qt.NoFocus)
         self.sliderSpeed.setPageStep(10)
-        self.sliderSpeed.setValue(1/self.mainWindow.device.getSpeed())
+        self.sliderSpeed.setValue(1/self.device.getSpeed())
         self.sliderSpeed.valueChanged.connect(self.updateSpeed)
 
-        #Label f?r Geschwindigkeit
-        self.labelSpeed = QLabel(str(1/self.mainWindow.device.getSpeed()))
+        #Label für Geschwindigkeit
+        self.labelSpeed = QLabel(str(1/self.device.getSpeed()))
         self.labelSpeedMain = QLabel("Geschwindigkeit:")
         self.labelSpeedMain.setFont(QFont("Arial",18))
 
-        #Slider f?r Clicks/Ml
+        #Slider für Clicks/Ml
         self.sliderClicksPerMl = QSlider(Qt.Horizontal)
         self.sliderClicksPerMl.setRange(10,1000)
         self.sliderClicksPerMl.setFocusPolicy(Qt.NoFocus)
         self.sliderClicksPerMl.setPageStep(10)
-        self.sliderClicksPerMl.setValue(self.mainWindow.device.getClicksPerMl())
+        self.sliderClicksPerMl.setValue(self.device.getClicksPerMl())
         self.sliderClicksPerMl.valueChanged.connect(self.updateClicks)
 
-        #Label f?r Clicks/Ml
-        self.labelClicksPerMl = QLabel(str(self.mainWindow.device.getClicksPerMl()))
+        #Label für Clicks/Ml
+        self.labelClicksPerMl = QLabel(str(self.device.getClicksPerMl()))
         self.labelClicksPerMlMain = QLabel("Impulse pro ml:")
         self.labelClicksPerMlMain.setFont(QFont("Arial",18))
 
-        #Checkbox f?r aktivieren eines Schrittmotors
+        #Checkbox für aktivieren eines Schrittmotors
         self.checkBoxActivate = QCheckBox("Motor 1 aktivieren")
         self.checkBoxActivate.stateChanged.connect(self.checkBoxClicked)
 
-        #Beschriftung f?r labelSirup und labelDrink erzeugen
+        #Beschriftung für labelSirup und labelDrink erzeugen
         self.textSirup = QLabel("Sirups:")
         self.textSirup.setFont(QFont("Arial",18))
         self.textDrink = QLabel("Drinks:")
         self.textDrink.setFont(QFont("Arial",18))
 
-        #Labels Sirups, Drinks und Buttons f?llen
+        #Labels Sirups, Drinks und Buttons füllen
         self.labelSirupButton.addWidget(self.buttonAddSirup)
         self.labelSirupButton.addWidget(self.buttonRemoveSirup)
         self.labelSirupButton.addWidget(self.buttonReloadSirup)
@@ -274,25 +283,24 @@ class Settings(QWidget):
         self.labelDrinkButton.addWidget(self.buttonLoadDrink)
         self.labelDrinkButton.addWidget(self.buttonUnloadDrink)
 
-        #bereits erstellte Sirups und Drinks mit Positionen werden hinzugef?gt
+        #bereits erstellte Sirups und Drinks mit Positionen werden hinzugefügt
         self.labelSirup.addWidget(self.textSirup)
-        for s in self.mainWindow.device.getSirups():
-            temp = self.mainWindow.device.findPosSirup(s)
+        for s in self.device.getSirups():
+            temp = self.device.findPosSirup(s)
             pos = (" ("+str(temp)+")") if temp >= 0 else ""
             self.labelSirup.addWidget(QLabel(s.getName() + pos))
         self.labelSirup.addLayout(self.labelSirupButton)
 
         self.labelDrink.addWidget(self.textDrink)
-        for s in self.mainWindow.device.getDrinks():
-            temp = self.mainWindow.device.findPosDrink(s)
+        for s in self.device.getDrinks():
+            temp = self.device.findPosDrink(s)
             pos = (" ("+str(temp)+")") if temp >= 0 else ""
             self.labelDrink.addWidget(QLabel(s.getName() + pos))
         self.labelDrink.addLayout(self.labelDrinkButton)
 
         self.labelButton.addWidget(self.buttonSafe)
-        #self.labelButton.addWidget(self.buttonLoad)
 
-        #Label f?r Copyright
+        #Label für Copyright
         self.copyright = QLabel()
         self.copyright.setText(self.mainWindow.device.about+"\n"+self.mainWindow.device.version)
 
@@ -310,15 +318,10 @@ class Settings(QWidget):
         self.mainLayout.addWidget(self.sliderClicksPerMl,4,1)
         self.mainLayout.addWidget(self.labelClicksPerMl,4,2)
         self.mainLayout.addWidget(self.copyright,6,1,QtCore.Qt.AlignBottom)
-        #self.mainLayout.setRowMinimumHeight(0,200)
         self.setLayout(self.mainLayout)
-        
-        
+         
     def onSafeClicked(self):
-        self.mainWindow.device.safeData()
-
-    #def onLoadClicked(self):
-    #    pass
+        self.device.safeData()
      
     def onAddSirupClicked(self):
         self.addSirupWindow = AddSirup(self.mainWindow)    #Fenster f?r Einstellungen wird ge?ffnet
@@ -357,18 +360,18 @@ class Settings(QWidget):
         self.UnloadDrinkWindow.show()
 
     def onBackClicked(self):
-        self.mainWindow.device.updateRemainingLiquid()
-        self.mainWindow.device.safeData()
+        self.device.updateRemainingLiquid()
+        self.device.safeData()
         self.close()
 
     def updateSpeed(self,value):
         self.labelSpeed.setText(str(value))
-        self.mainWindow.device.setSpeed(1/value)
+        self.device.setSpeed(1/value)
         self.update()
 
     def updateClicks(self,value):
         self.labelClicksPerMl.setText(str(value))
-        self.mainWindow.device.setClicksPerMl(value)
+        self.device.setClicksPerMl(value)
         self.update()
 
     def checkBoxClicked(self,state):

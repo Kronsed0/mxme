@@ -21,30 +21,6 @@ from Sirup import *
 from XML_Formatierung import *
 from GUI import *
 
-#Abfrage für Betriebssystem -> wenn Linux auf Raspberry wird Hardwarebib eingebunden
-os = platform.platform()
-if "Linux" in os:
-    rasp = True
-else:
-    rasp = False
-if rasp:
-   import RPi.GPIO as GPIO
-
-   #Pinbelegung: [[Enable1,Direction1,Step1],[Enable2,Direction2,Step2],...]
-   channels = [[6,11,5],[26,13,19],[16,21,20],[8,12,7],[24,9,25],[15,23,18],[3,14,2],[27,4,17]]
-
-   #Pins als Ausgang deklarieren
-   GPIO.setmode(GPIO.BCM)
-   for channel in channels:
-       for pin in channel:
-           GPIO.setup(pin,GPIO.OUT)
-
-   #Treiber deaktivieren
-   print("Treiber werden initial deaktiviert:")
-   for channel in channels:
-    GPIO.output(channel[0],GPIO.HIGH)
-    print(".")
-
 class Device():
     def __init__(self,xName='Default'):
         self.name = xName
@@ -59,16 +35,40 @@ class Device():
         self.version = "Version: 0.6.0"    #Version {Alpha=0,Beta=1,Release=x}.{FunctionChanges}.{BugFix}
         self.about = "@ mxme"
 
+        os = platform.platform()
+        self.rasp = True if "Linux" in os else False
+
+        #Hardware einbinden, falls Programm auf Linux ausgeführt wird
+        self.initHardware()
+
         #Daten aus XML-Datei auslesen 
         self.loadData()
         
         #MainWindow laden
         MainWindow(self)
 
-        self.updateRemainingLiquid()
+        self.updateRemainingLiquid()        
+        
+    def initHardware(self):
+        #Abfrage für Betriebssystem -> wenn Linux auf Raspberry wird Hardwarebib eingebunden
+        if self.rasp:
+           import RPi.GPIO as GPIO
 
-        
-        
+           #Pinbelegung: [[Enable1,Direction1,Step1],[Enable2,Direction2,Step2],...]
+           channels = [[6,11,5],[26,13,19],[16,21,20],[8,12,7],[24,9,25],[15,23,18],[3,14,2],[27,4,17]]
+
+           #Pins als Ausgang deklarieren
+           GPIO.setmode(GPIO.BCM)
+           for channel in channels:
+               for pin in channel:
+                   GPIO.setup(pin,GPIO.OUT)
+
+           #Treiber deaktivieren
+           print("Treiber werden initial deaktiviert:")
+           for channel in channels:
+            GPIO.output(channel[0],GPIO.HIGH)
+            print(".")
+
     def loadIngredient(self,sirup,place,percent=100):
         #Sirup wird in Ger?t geladen        
         if len(self.loaded_ingredients) < 8:
@@ -315,3 +315,13 @@ class Device():
     
     def setClicksPerMl(self,value):
         self.clicksPerMl = value
+
+    def enablePump(self,nr):
+        print("Motor wird aktiviert")
+        if self.rasp:
+            GPIO.output(channels[nr][0],GPIO.LOW)
+
+    def disablePump(self,nr):
+        print("Motor wird deaktiviert")
+        if self.rasp:
+            GPIO.output(channels[nr][0],GPIO.HIGH)
