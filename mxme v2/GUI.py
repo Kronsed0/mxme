@@ -16,11 +16,14 @@ import sys
 
 class MainWindow(QWidget):
     def __init__(self,_device):
+
+        #Application wird initialisiert, um die PyQt5 Bibliothek nutzen zu k?nnen
         app = QApplication(sys.argv)
+
+        #Eltern-Konstruktor wird aufgerufen
         super().__init__()
-
         
-
+        #Verweis auf Device-Objekt wird zwischengespeichert
         self.device = _device
 
         #Haupapplikation initialisieren
@@ -39,61 +42,59 @@ class MainWindow(QWidget):
         #Hauptlayout erzeugen
         self.mainLayout = QGridLayout()
         
-        #Buttons f?r Drinks erstellen
+        #Buttons für Drinks erstellen
         for x in range(8):
             #Zeile und Spalte berechnen
-            self.row=2 if x>3 else 0
-            self.column=x-4 if x>3 else x
+            row=2 if x>3 else 0
+            column=x-4 if x>3 else x
             
             #Name des Drinks
-            print("geladene Drinks: ",self.device.getLoadedDrinkName(x))
-            print("direkt ausgelesen: ",self.device.loaded_drinks)
             name = self.device.getLoadedDrinkName(x)
             
-            #Lables f?r Drinkbeschriftungen erzeugen
-            self.drinktext = QLabel()
+            #Lables für Drinkbeschriftungen erzeugen
+            drinktext = QLabel()
             if name == "nicht geladen":
-                self.drinktext.setText("")
+                drinktext.setText("")
             else:
-                self.drinktext.setText(name)
-            self.myFont = QFont('Arial',12)
-            self.myFont.setBold(True)
-            self.setFont(self.myFont)
+                drinktext.setText(name)
+            myFont = QFont('Arial',12)
+            myFont.setBold(True)
+            self.setFont(myFont)
             
             #Drinkbutton erstellen
-            self.drink = PicButton(QPixmap("img/"+name+'.png'),QPixmap("img/"+name+'.png'),QPixmap("img/"+name+'_pressed.png'))
-            self.drink.setFixedSize(205,240)
+            drink = PicButton(QPixmap("img/"+name+'.png'),QPixmap("img/"+name+'.png'),QPixmap("img/"+name+'_pressed.png'))
+            drink.setFixedSize(205,240)
             
             #Signal mit entsprechender Funktion verbinden
             if x==0:
-                self.drink.clicked.connect(self.onDrink1Clicked)  
+                drink.clicked.connect(self.onDrink1Clicked)  
             elif x==1:
-                self.drink.clicked.connect(self.onDrink2Clicked) 
+                drink.clicked.connect(self.onDrink2Clicked) 
             elif x==2:
-                self.drink.clicked.connect(self.onDrink3Clicked)
+                drink.clicked.connect(self.onDrink3Clicked)
             elif x==3:
-                self.drink.clicked.connect(self.onDrink4Clicked)
+                drink.clicked.connect(self.onDrink4Clicked)
             elif x==4:
-                self.drink.clicked.connect(self.onDrink5Clicked)
+                drink.clicked.connect(self.onDrink5Clicked)
             elif x==5:
-                self.drink.clicked.connect(self.onDrink6Clicked)
+                drink.clicked.connect(self.onDrink6Clicked)
             elif x==6:
-                self.drink.clicked.connect(self.onDrink7Clicked)
+                drink.clicked.connect(self.onDrink7Clicked)
             elif x==7:
-                self.drink.clicked.connect(self.onDrink8Clicked)
+                drink.clicked.connect(self.onDrink8Clicked)
         
             #Buttons speichern
-            self.device.buttons.append(self.drink)
+            self.device.buttons.append(drink)
    
             #Drinkbutton in Layout einbetten
-            self.mainLayout.addWidget(self.drink,self.row,self.column)
+            self.mainLayout.addWidget(drink,row,column)
             #else:
-            self.mainLayout.addWidget(self.drinktext,self.row+1,self.column,QtCore.Qt.AlignHCenter)
-                     
-            
+            self.mainLayout.addWidget(drinktext,row+1,column,QtCore.Qt.AlignHCenter)
+        
+        #Bestätigungsmeldung für erstellen der Buttons    
         print("Buttons erfolgreich erstellt")
 
-        #Layout f?r Buttons erstellen
+        #Layout für Buttons erstellen
         self.layoutButtons = QVBoxLayout()
         
         #Buttons erstellen
@@ -106,19 +107,19 @@ class MainWindow(QWidget):
 
         print("Settings und Shutdown Buttons erfolgreich erstellt")
 
-        #Progressbalken f?r F?llstand
+        #Progressbalken für Füllstand
         for x in range(8):
             level = QProgressBar(self)
             level.setMaximum(100)
             self.device.levelList.append(level)
         
-        #Buttons in Sublayout einf?gen
+        #Buttons in Sublayout einfügen
         self.layoutButtons.addWidget(self.buttonShutdown)
         self.layoutButtons.addWidget(self.buttonSettings)
         for x in self.device.levelList:
             self.layoutButtons.addWidget(x)
         
-        #Sublayout in Layout einf?gen
+        #Sublayout in Layout einfügen
         self.mainLayout.addLayout(self.layoutButtons,0,4,4,1,QtCore.Qt.AlignTop)        
 
         #Layout erstellen und anzeigen
@@ -134,35 +135,35 @@ class MainWindow(QWidget):
         self.close()
 
     def onDrink1Clicked(self):
-        print("Drink ",self.device.getLoadedDrinkName(0)," gedr?ckt")
+        print("Drink ",self.device.getLoadedDrinkName(0)," gedrückt")
         self.device.mix(self.device.getLoadedDrink(0))
         
     def onDrink2Clicked(self):
-        print("Drink ",self.device.getLoadedDrinkName(1)," gedr?ckt")
+        print("Drink ",self.device.getLoadedDrinkName(1)," gedrückt")
         self.device.mix(self.device.getLoadedDrink(1))
         
     def onDrink3Clicked(self):
-        print("Drink ",self.device.getLoadedDrinkName(2)," gedr?ckt")
+        print("Drink ",self.device.getLoadedDrinkName(2)," gedrückt")
         self.device.mix(self.device.getLoadedDrink(2))
         
     def onDrink4Clicked(self):
-        print("Drink ",self.device.getLoadedDrinkName(3)," gedr?ckt")
+        print("Drink ",self.device.getLoadedDrinkName(3)," gedrückt")
         self.device.mix(self.device.getLoadedDrink(3))
         
     def onDrink5Clicked(self):
-        print("Drink ",self.device.getLoadedDrinkName(4)," gedr?ckt")
+        print("Drink ",self.device.getLoadedDrinkName(4)," gedrückt")
         self.device.mix(self.device.getLoadedDrink(4))
         
     def onDrink6Clicked(self):
-        print("Drink ",self.device.getLoadedDrinkName(5)," gedr?ckt")
+        print("Drink ",self.device.getLoadedDrinkName(5)," gedrückt")
         self.device.mix(self.device.getLoadedDrink(5))
         
     def onDrink7Clicked(self):
-        print("Drink ",self.device.getLoadedDrinkName(6)," gedr?ckt")
+        print("Drink ",self.device.getLoadedDrinkName(6)," gedrückt")
         self.device.mix(self.device.getLoadedDrink(6))
         
     def onDrink8Clicked(self):
-        print("Drink ",self.device.getLoadedDrinkName(7)," gedr?ckt")
+        print("Drink ",self.device.getLoadedDrinkName(7)," gedrückt")
         self.device.mix(self.device.getLoadedDrink(7))
 
 class Settings(QWidget):

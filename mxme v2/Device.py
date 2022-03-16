@@ -48,13 +48,13 @@ if rasp:
 class Device():
     def __init__(self,xName='Default'):
         self.name = xName
-        self.drinks = []    #Liste mit verf?gbaren Drinks
-        self.sirups = []    #Liste mit verf?gbaren Sirups
+        self.drinks = []    #Liste mit verfügbaren Drinks
+        self.sirups = []    #Liste mit verfügbaren Sirups
         self.loaded_ingredients = {}    #Dict {Position:Sirup}
         self.loaded_drinks = {}         #Dict {Position:Drink}
         self.buttons = []   #Hier werden die Buttons zwischengespeichert
         self.levelList = [] #Liste f?r die F?llstandsanzeigen
-        self.clicksPerMl = 50   #Wert f?r die Ausflussgeschwindigkeit pro Schritt
+        self.clicksPerMl = 50   #Wert für die Ausflussgeschwindigkeit pro Schritt
         self.speed = 0.01       #Geschwindigkeit der Steppermotoren (Delay in s zwischen Schritten)
         self.version = "Version: 0.6.0"    #Version {Alpha=0,Beta=1,Release=x}.{FunctionChanges}.{BugFix}
         self.about = "@ mxme"
@@ -113,12 +113,12 @@ class Device():
         return erg
         
     def mix(self,drink):
-        #richtige ?bergabeparameter?
+        #richtige Übergabeparameter?
         if drink == None:
             print("Falscher Uebergabeparameter")
             return 0
 
-        #ben?tigte Sirups geladen?
+        #benötigte Sirups geladen?
         for x in drink.getIngredients().keys():
             if x in self.getLoadedIngredients().values():
                 print(".")
@@ -128,7 +128,7 @@ class Device():
 
         #Position/Menge auslesen und in Liste speichern
         ing = []        #Liste mit folgendem Aufbau [(position,menge),(position,menge)]
-        for s in drink.getIngredients().keys():     #?ber Bestandteile iterieren
+        for s in drink.getIngredients().keys():     #über Bestandteile iterieren
             ing.append((self.findPosSirup(s),drink.getIngredients()[s]))
         print("Pumpenausgabe--------------")
         print(ing)
@@ -225,7 +225,7 @@ class Device():
     def loadData(self):
         data=Path("Data.xml")
         if data.is_file():
-            print("Daten gefunden!")
+            print("XML Datei gefunden!")
             baum = ET.parse("Data.xml")
             device = baum.getroot()     #Ebene 0 (Device)  
             for e1 in device:           #Ebene 1 (Settings,Sirups,Drinks,loadedSirups,loadedDrinks)  
@@ -281,9 +281,7 @@ class Device():
         print("Gespeichert!")
 
     def findSirup(self,name):
-        print("Gesuchter Name: ",name)
         for s in self.sirups:
-            print(s.getName())
             if s.getName() == name:
                 return s
             
