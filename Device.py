@@ -6,11 +6,6 @@ Created on Fri Mar 11 14:30:05 2022
 """
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QApplication, \
-QPushButton, QLineEdit, QLabel, QGridLayout, \
-QHBoxLayout,QAbstractButton,QVBoxLayout,QDialog,QFrame,QComboBox,QProgressBar,QSlider,QCheckBox
-from PyQt5.QtGui import QIcon,QPixmap,QPainter,QImage,QPalette,QBrush,QFont
-from PyQt5.QtCore import QSize,QPoint,Qt
 from pathlib import Path
 import platform
 import sys
